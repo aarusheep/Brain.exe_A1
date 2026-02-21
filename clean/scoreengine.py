@@ -15,8 +15,9 @@ Original file is located at
 5. Repeat until pool exhausted or you stop
 """
 
-import subprocess
-subprocess.run(['pip', 'install', 'openpyxl', '-q'])
+if __name__ == "__main__":
+    import subprocess
+    subprocess.run(['pip', 'install', 'openpyxl', '-q'])
 import pandas as pd
 import numpy as np
 
@@ -24,7 +25,8 @@ print('Libraries ready')
 
 
 print('Upload EXIM_Cleaned_GlobexMatch.xlsx')
-CLEAN_FILE = r"Brain.exe_A1\clean\EXIM_Cleaned_GlobexMatch.xlsx"
+import os
+CLEAN_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'EXIM_Cleaned_GlobexMatch.xlsx')
 print('Loaded:', CLEAN_FILE)
 
 DEFAULT_WEIGHTS = {
@@ -350,114 +352,127 @@ def print_final_summary(all_accepted, all_rejected_ids, weight_history, total_ro
 
 print("Display functions loaded")
 
-print("Loading dataset...")
-clean   = pd.read_excel(CLEAN_FILE, sheet_name=None)
-exp_df  = clean["Exporters_Clean"]
-imp_df  = clean["Importers_Clean"]
-news_df = clean["News_Clean"]
-mat_df  = clean["Buyer_Maturity"]
+# Data globals
+clean, exp_df, imp_df, news_df, mat_df = None, None, None, None, None
+mat_lookup, ref_date, cap_norms, news_cache = None, None, None, None
 
-for df in [exp_df, imp_df, news_df]:
-    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-imp_df["Funding_Event"] = pd.to_numeric(imp_df["Funding_Event"], errors="coerce").fillna(0)
+def load_data():
+    global clean, exp_df, imp_df, news_df, mat_df
+    global mat_lookup, ref_date, cap_norms, news_cache
+    
+    print("Loading dataset...")
+    clean   = pd.read_excel(CLEAN_FILE, sheet_name=None)
+    exp_df  = clean["Exporters_Clean"]
+    imp_df  = clean["Importers_Clean"]
+    news_df = clean["News_Clean"]
+    mat_df  = clean["Buyer_Maturity"]
 
-mat_lookup = dict(zip(mat_df["Buyer_ID"], mat_df["Maturity"]))
-ref_date   = exp_df["Date"].max()
-cap_norms  = {c: (exp_df[c].min(), exp_df[c].max())
-              for c in ["Shipment_Value_USD","Quantity_Tons","Revenue_Size_USD","Team_Size"]}
+    for df in [exp_df, imp_df, news_df]:
+        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+    imp_df["Funding_Event"] = pd.to_numeric(imp_df["Funding_Event"], errors="coerce").fillna(0)
 
-print("Building news risk cache...")
-news_cache = build_news_cache(news_df)
+    mat_lookup = dict(zip(mat_df["Buyer_ID"], mat_df["Maturity"]))
+    ref_date   = exp_df["Date"].max()
+    cap_norms  = {c: (exp_df[c].min(), exp_df[c].max())
+                  for c in ["Shipment_Value_USD","Quantity_Tons","Revenue_Size_USD","Team_Size"]}
 
-print("Data ready")
-print(f"  Exporters : {exp_df[exp_df['Is_Latest_Record']==1].shape[0]:,}")
-print(f"  Importers : {imp_df[imp_df['Is_Latest_Record']==1].shape[0]:,}")
+    print("Building news risk cache...")
+    news_cache = build_news_cache(news_df)
 
-import time
+    print("Data ready")
+    print(f"  Exporters : {exp_df[exp_df['Is_Latest_Record']==1].shape[0]:,}")
+    print(f"  Importers : {imp_df[imp_df['Is_Latest_Record']==1].shape[0]:,}")
 
-exporter_id = input("Enter Exporter ID (e.g. EXP_1715): ").strip()
-exp_matches = exp_df[exp_df["Exporter_ID"] == exporter_id]
+def run_cli():
+    load_data()
+    import time
 
-if exp_matches.empty:
-    print(f"Exporter {exporter_id} not found.")
-else:
-    exp_row = exp_matches.iloc[0]
-    print(f"Found: {exporter_id} | {exp_row['Industry']} | {exp_row['State']}")
+    exporter_id = input("Enter Exporter ID (e.g. EXP_1715): ").strip()
+    exp_matches = exp_df[exp_df["Exporter_ID"] == exporter_id]
 
-    pool             = imp_df[imp_df["Is_Latest_Record"]==1].copy().reset_index(drop=True)
-    current_weights  = DEFAULT_WEIGHTS.copy()
-    all_accepted     = []
-    all_rejected_ids = set()
-    weight_history   = [{"Round": 0, **{k: round(v,4) for k, v in current_weights.items()}}]
-    round_num        = 0
-    keep_going       = True
+    if exp_matches.empty:
+        print(f"Exporter {exporter_id} not found.")
+    else:
+        exp_row = exp_matches.iloc[0]
+        print(f"Found: {exporter_id} | {exp_row['Industry']} | {exp_row['State']}")
 
-    while keep_going and len(pool) > 0:
-        round_num += 1
+        pool             = imp_df[imp_df["Is_Latest_Record"]==1].copy().reset_index(drop=True)
+        current_weights  = DEFAULT_WEIGHTS.copy()
+        all_accepted     = []
+        all_rejected_ids = set()
+        weight_history   = [{"Round": 0, **{k: round(v,4) for k, v in current_weights.items()}}]
+        round_num        = 0
+        keep_going       = True
 
-        print(f"Scoring pool ({len(pool):,} buyers)...")
-        scored = score_pool(exp_row, pool, mat_lookup, news_cache, cap_norms, ref_date, current_weights)
+        while keep_going and len(pool) > 0:
+            round_num += 1
 
-        if scored.empty:
-            print("No more matching buyers in pool.")
-            break
+            print(f"Scoring pool ({len(pool):,} buyers)...")
+            scored = score_pool(exp_row, pool, mat_lookup, news_cache, cap_norms, ref_date, current_weights)
 
-        top15 = scored.head(TOP_N).copy()
-
-        round_accepted = []
-        round_rejected = []
-
-        for i, (_, buyer) in enumerate(top15.iterrows()):
-            print()
-            print_buyer_card(buyer, i+1, len(top15), round_num)
-            time.sleep(0.3)
-
-            while True:
-                ans = input("  Accept or Reject?  [y = Accept  |  n = Reject  |  q = Quit]: ").strip().lower()
-                if ans in ("y", "n", "q"):
-                    break
-                print("  Please enter y, n, or q")
-
-            if ans == "q":
-                print("Session ended.")
-                keep_going = False
+            if scored.empty:
+                print("No more matching buyers in pool.")
                 break
-            elif ans == "y":
-                print("  -> Accepted. Added to pipeline.")
-                round_accepted.append(buyer.to_dict())
+
+            top15 = scored.head(TOP_N).copy()
+
+            round_accepted = []
+            round_rejected = []
+
+            for i, (_, buyer) in enumerate(top15.iterrows()):
+                print()
+                print_buyer_card(buyer, i+1, len(top15), round_num)
+                time.sleep(0.3)
+
+                while True:
+                    ans = input("  Accept or Reject?  [y = Accept  |  n = Reject  |  q = Quit]: ").strip().lower()
+                    if ans in ("y", "n", "q"):
+                        break
+                    print("  Please enter y, n, or q")
+
+                if ans == "q":
+                    print("Session ended.")
+                    keep_going = False
+                    break
+                elif ans == "y":
+                    print("  -> Accepted. Added to pipeline.")
+                    round_accepted.append(buyer.to_dict())
+                else:
+                    print("  -> Rejected. Will re-appear with updated weights.")
+                    round_rejected.append(buyer.to_dict())
+
+            if not keep_going:
+                break
+
+            acc_ids     = [b["Buyer_ID"] for b in round_accepted]
+            rej_ids     = [b["Buyer_ID"] for b in round_rejected]
+            accepted_df = top15[top15["Buyer_ID"].isin(acc_ids)]
+            rejected_df = top15[top15["Buyer_ID"].isin(rej_ids)]
+
+            if len(round_accepted) > 0 and len(round_rejected) > 0:
+                current_weights, weight_log = adjust_weights(accepted_df, rejected_df, current_weights, round_num)
             else:
-                print("  -> Rejected. Will re-appear with updated weights.")
-                round_rejected.append(buyer.to_dict())
+                weight_log = [{"Dimension":k,"Old":v,"Delta":0,"Direction":"UNCHANGED"}
+                              for k, v in current_weights.items()]
 
-        if not keep_going:
-            break
+            weight_history.append({"Round": round_num, **{k: round(v,4) for k,v in current_weights.items()}})
 
-        acc_ids     = [b["Buyer_ID"] for b in round_accepted]
-        rej_ids     = [b["Buyer_ID"] for b in round_rejected]
-        accepted_df = top15[top15["Buyer_ID"].isin(acc_ids)]
-        rejected_df = top15[top15["Buyer_ID"].isin(rej_ids)]
+            pool = pool[~pool["Buyer_ID"].isin(acc_ids)].copy()
+            all_accepted.extend(round_accepted)
+            all_rejected_ids.update(rej_ids)
 
-        if len(round_accepted) > 0 and len(round_rejected) > 0:
-            current_weights, weight_log = adjust_weights(accepted_df, rejected_df, current_weights, round_num)
-        else:
-            weight_log = [{"Dimension":k,"Old":v,"Delta":0,"Direction":"UNCHANGED"}
-                          for k, v in current_weights.items()]
+            print()
+            print_round_summary(round_num, len(round_accepted), len(round_rejected),
+                                current_weights, weight_log, len(pool))
 
-        weight_history.append({"Round": round_num, **{k: round(v,4) for k,v in current_weights.items()}})
-
-        pool = pool[~pool["Buyer_ID"].isin(acc_ids)].copy()
-        all_accepted.extend(round_accepted)
-        all_rejected_ids.update(rej_ids)
+            time.sleep(0.3)
+            cont = input("""
+      Continue to next round? [y / n]: """).strip().lower()
+            if cont != "y":
+                keep_going = False
 
         print()
-        print_round_summary(round_num, len(round_accepted), len(round_rejected),
-                            current_weights, weight_log, len(pool))
+        print_final_summary(all_accepted, all_rejected_ids, weight_history, round_num, len(pool))
 
-        time.sleep(0.3)
-        cont = input("""
-  Continue to next round? [y / n]: """).strip().lower()
-        if cont != "y":
-            keep_going = False
-
-    print()
-    print_final_summary(all_accepted, all_rejected_ids, weight_history, round_num, len(pool))
+if __name__ == "__main__":
+    run_cli()

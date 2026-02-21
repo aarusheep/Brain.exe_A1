@@ -1,4 +1,4 @@
-import { TrendingUp, Calendar, Bot, CheckSquare, XCircle, Globe, Zap, Anchor, ShieldCheck } from 'lucide-react'
+import { TrendingUp, Calendar, Bot, Zap, Anchor, ShieldCheck } from 'lucide-react'
 import { motion } from 'framer-motion'
 import RollingNumber from '../components/RollingNumber'
 

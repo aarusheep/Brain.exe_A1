@@ -32,6 +32,26 @@ const importerSchema = new mongoose.Schema({
     enum: ['pending', 'accepted', 'rejected']
   },
 
+  // Extended Data Fields from CSV
+  avg_order_tons: Number,
+  revenue: Number, // Mapped from Revenue_Size_USD
+  team_size: Number,
+  certification: String,
+  good_payment_history: Boolean,
+  hiring_growth: Boolean,
+  funding_event: String, // '1', '0', or 'Unknown'
+  engagement_spike: Boolean,
+  sales_nav_visits: Number,
+  decision_maker_change: Boolean,
+  preferred_channel: String,
+
+  // Risk Factors
+  tariff_news: Boolean,
+  stock_market_shock: Boolean,
+  war_event: Boolean,
+  natural_calamity: Boolean,
+  currency_fluctuation: Number,
+
   // AI Generated fields
   summary: {
     type: String, // Full reasoning

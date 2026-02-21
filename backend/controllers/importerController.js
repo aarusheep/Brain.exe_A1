@@ -1,70 +1,53 @@
 const Importer = require('../models/Importer');
 const axios = require('axios');
 
-// Gemini API Helper (to be used internally or via dedicated endpoint)
-const generateReasoning = async (importerData) => {
+const PYTHON_AI_URL = 'http://localhost:8000';
+const DEFAULT_EXPORTER_ID = 'EXP_1715'; // Hardcoded for demo flow
+
+// Helper to init session if needed
+const ensureSessionInitialized = async () => {
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) return { summary: "Gemini API Key missing", pros: [], cons: [] };
-
-    const prompt = `
-    Analyze the following importer data and provide a concise summary reasoning for exporting to them.
-    Also generate a list of Pros (positive aspects) and Cons (negative risks).
-    Importer: ${JSON.stringify(importerData)}
-    
-    Response format (JSON):
-    {
-      "summary": "...",
-      "pros": ["..."],
-      "cons": ["..."]
-    }
-    `;
-
-    const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        contents: [{ parts: [{ text: prompt }] }]
-      },
-      { headers: { 'Content-Type': 'application/json' } }
-    );
-
-    const text = response.data.candidates[0].content.parts[0].text;
-    // Attempt to extract JSON from the text response
-    try {
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
-      }
-      return { summary: text, pros: [], cons: [] };
-    } catch (e) {
-      return { summary: text, pros: [], cons: [] };
-    }
-
+    // Try to init session
+    await axios.post(`${PYTHON_AI_URL}/session/init`, {
+      exporter_id: DEFAULT_EXPORTER_ID
+    });
+    console.log('Python Session Initialized');
   } catch (error) {
-    console.error("Gemini API Error:", error.response?.data || error.message);
-    return { summary: "Error generating content", pros: [], cons: [] };
+    console.error('Failed to init Python session:', error.message);
   }
 };
 
-
-// @desc    Get top 15 ranked pending importers
+// @desc    Get top ranked pending importers (via AI Engine)
 // @route   GET /api/importers
-// @access  Private (or Public for now)
 const getTopImporters = async (req, res) => {
   try {
-    // Logic: Fetch top 15 'pending' importers sorted by rank or score
-    // Assuming 'rank' or 'intent_score' is populated.
-    const importers = await Importer.find({ status: 'pending' })
-      .sort({ score: -1 }) // or rank: 1
-      .limit(15);
+    let response;
+    try {
+      response = await axios.get(`${PYTHON_AI_URL}/recommendations?limit=10`);
+    } catch (err) {
+      if (err.response && err.response.status === 400) {
+        // Session not init, try initializing
+        await ensureSessionInitialized();
+        response = await axios.get(`${PYTHON_AI_URL}/recommendations?limit=10`);
+      } else {
+        throw err;
+      }
+    }
 
-    // Create new array with summaries if missing (lazy load summary)
-    // In a real app, this might be async or background job.
-    // For demo, we might return as is, or trigger summary generation if missing.
+    const aiData = response.data; // { round, weights, buyers: [...] }
 
-    res.json(importers);
+    // Return the AI data directly as it contains the rich scoring breakdown
+    // If the frontend expects a flat array, we return aiData.buyers
+    res.json(aiData.buyers);
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("AI Engine Error:", error.message);
+    // Fallback to MongoDB if Python fails
+    console.log("Falling back to MongoDB...");
+    const importers = await Importer.find({ status: 'pending' })
+      .sort({ score: -1, intent_score: -1 })
+      .limit(10);
+    res.json(importers);
   }
 };
 
@@ -85,16 +68,14 @@ const getImporterSummary = async (req, res) => {
       });
     }
 
-    // Generate new summary
-    const aiData = await generateReasoning(importer);
+    // Generate generative reasoning using Gemini via another endpoint or service
+    // For now returning mock or existing if any
+    res.json({
+      summary: "AI Summary not generated yet.",
+      pros: [],
+      cons: []
+    });
 
-    // Update DB
-    importer.summary = aiData.summary;
-    importer.pros = aiData.pros;
-    importer.cons = aiData.cons;
-    await importer.save();
-
-    res.json(aiData);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -114,21 +95,33 @@ const reviewImporter = async (req, res) => {
     const importer = await Importer.findById(req.params.id);
     if (!importer) return res.status(404).json({ message: 'Importer not found' });
 
+    // Update MongoDB
     importer.status = status;
     await importer.save();
 
+    // Notify Python AI Engine
+    // Map _id/name to Buyer_ID
+    const buyerId = importer.name; // In seed_csv.js we mapped Buyer_ID -> name
+
+    // Construct payload
+    const payload = {
+      accepted_ids: status === 'accepted' ? [buyerId] : [],
+      rejected_ids: status === 'rejected' ? [buyerId] : []
+    };
+
+    try {
+      await axios.post(`${PYTHON_AI_URL}/feedback`, payload);
+      console.log(`Feedback sent to AI Engine for ${buyerId}: ${status}`);
+    } catch (aiError) {
+      console.error("Failed to send feedback to AI Engine:", aiError.message);
+      // Don't fail the request if AI creates an error, just log it
+    }
+
     res.json({ message: `Importer marked as ${status}`, id: importer._id });
-
-    // NOTE: Rejected cards logic
-    // "after 15 card the rejected cards are sent to the remaining card and they are scored again"
-    // This implies triggering a re-score or ensuring we have enough pending cards.
-    // We assume the DB has 12000 items, so `getTopImporters` will simply fetch the *next* available ones
-    // since we filtered by status='pending'. 
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-
 module.exports = { getTopImporters, getImporterSummary, reviewImporter };
+

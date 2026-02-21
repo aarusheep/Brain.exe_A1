@@ -5,9 +5,9 @@ import { CheckCircle2, XCircle, TrendingUp, BarChart3 } from 'lucide-react'
 
 export default function ApproveLeads() {
   const [stats, setStats] = useState({
-    approved: 12,
-    rejected: 4,
-    total: 48
+    approved: 0,
+    rejected: 0,
+    total: 0
   })
 
   const handleAction = (type: 'approve' | 'reject') => {
@@ -17,16 +17,23 @@ export default function ApproveLeads() {
     }))
   }
 
+  const handleLoad = (count: number) => {
+    setStats(prev => ({
+      ...prev,
+      total: count
+    }))
+  }
+
   return (
     <div className="h-full flex flex-col p-0 bg-white">
       {/* Dynamic Stats Bar */}
       <div className="flex-shrink-0 border-b border-slate-100 bg-white/80 backdrop-blur-md px-8 py-4 flex items-center justify-between z-10">
         <div className="flex items-center gap-8">
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Weekly Pipeline</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Session Pipeline</span>
             <div className="flex items-center gap-2">
               <TrendingUp size={14} className="text-blue-500" />
-              <span className="text-sm font-bold text-slate-800">{stats.total} Active Leads</span>
+              <span className="text-sm font-bold text-slate-800">{stats.total} Active Recommended Leads</span>
             </div>
           </div>
 
@@ -57,7 +64,7 @@ export default function ApproveLeads() {
         <div className="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
           <BarChart3 size={16} className="text-slate-400" />
           <span className="text-xs font-bold text-slate-600">
-            {Math.round(((stats.approved + stats.rejected) / stats.total) * 100)}% Reviewed
+            {stats.total > 0 ? Math.round(((stats.approved + stats.rejected) / stats.total) * 100) : 0}% Reviewed
           </span>
         </div>
       </div>
@@ -68,7 +75,7 @@ export default function ApproveLeads() {
         transition={{ duration: 0.5 }}
         className="flex-1 min-h-0 relative overflow-hidden"
       >
-        <SplitGlobePage onAction={handleAction} />
+        <SplitGlobePage onAction={handleAction} onLoad={handleLoad} />
       </motion.div>
     </div>
   )

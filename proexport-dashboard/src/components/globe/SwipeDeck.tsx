@@ -45,7 +45,6 @@ const SwipeDeck: React.FC<SwipeDeckProps> = ({ leads, onSwipe, currentIndex }) =
                 {remainingLeads.map((lead, idx) => {
                     const isFront = idx === 0;
                     const scale = isFront ? 1 : 1 - idx * 0.05;
-                    const yOffset = idx * 10;
                     const zIndex = remainingLeads.length - idx;
 
                     return (
@@ -55,7 +54,7 @@ const SwipeDeck: React.FC<SwipeDeckProps> = ({ leads, onSwipe, currentIndex }) =
                             animate={{
                                 scale,
                                 opacity: 1,
-                                y: 0,
+                                y: idx * 10,
                                 zIndex
                             }}
                             exit={{
