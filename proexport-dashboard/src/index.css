@@ -5,16 +5,16 @@
 /* ── Google Font ─────────────────────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
 
-/* ── Royal Dark Design Tokens ────────────────────────────────── */
+/* ── Digital Blue Design Tokens ────────────────────────────────── */
 :root {
   --royal-bg: #020617;
   --royal-card-from: rgba(30, 41, 59, 0.4);
   --royal-card-to: rgba(15, 23, 42, 0.6);
   --royal-border: rgba(255, 255, 255, 0.08);
   --royal-border-top: rgba(255, 255, 255, 0.15);
-  --gold-from: #fde047;
-  --gold-to: #ca8a04;
-  --gold-accent: #ca8a04;
+  --blue-from: #38bdf8;
+  --blue-to: #0284c7;
+  --blue-accent: #0ea5e9;
   --slate-primary: #cbd5e1;
   --slate-muted: #64748b;
 }
@@ -61,7 +61,7 @@
   }
 }
 
-@keyframes gold-glint-slide {
+@keyframes blue-glint-slide {
   0% {
     left: -100%;
   }
@@ -90,45 +90,45 @@
   .premium-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(56, 189, 248, 0.3);
   }
 
-  /* ── Gold glint reflection ── */
-  .gold-glint::after {
+  /* ── Blue glint reflection ── */
+  .blue-glint::after {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     width: 30%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.05), transparent);
+    background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.05), transparent);
     animation: metallic-sweep 8s infinite ease-in-out;
     pointer-events: none;
   }
 
-  /* ── Gold brand text ── */
-  .text-gradient-gold {
-    background: linear-gradient(to bottom right, var(--gold-from), var(--gold-to));
+  /* ── Blue brand text ── */
+  .text-gradient-blue {
+    background: linear-gradient(to bottom right, var(--blue-from), var(--blue-to));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
-  /* ── Primary Gold Button ── */
-  .btn-gold {
-    background: linear-gradient(to right, #ca8a04, #f59e0b);
-    color: black;
+  /* ── Primary Blue Button ── */
+  .btn-blue {
+    background: linear-gradient(to right, #0284c7, #38bdf8);
+    color: white;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.15em;
     padding: 0.6rem 1.8rem;
     border-radius: 9999px;
-    box-shadow: 0 10px 20px -5px rgba(202, 138, 4, 0.3);
+    box-shadow: 0 10px 20px -5px rgba(2, 132, 199, 0.3);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
   }
 
-  .btn-gold::after {
+  .btn-blue::after {
     content: "";
     position: absolute;
     top: 0;
@@ -140,17 +140,17 @@
     transition: 0s;
   }
 
-  .btn-gold:hover::after {
+  .btn-blue:hover::after {
     left: 200%;
     transition: left 0.6s ease;
   }
 
-  .btn-gold:hover {
+  .btn-blue:hover {
     transform: translateY(-2px);
-    box-shadow: 0 15px 25px -5px rgba(202, 138, 4, 0.4);
+    box-shadow: 0 15px 25px -5px rgba(2, 132, 199, 0.4);
   }
 
-  .btn-gold:active {
+  .btn-blue:active {
     transform: translateY(0);
   }
 
@@ -170,7 +170,7 @@
 
   .btn-outline:hover {
     background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(56, 189, 248, 0.25);
     color: white;
     transform: translateY(-1px);
   }
@@ -185,7 +185,7 @@
     animation: ambient-pulse 15s infinite ease-in-out;
   }
 
-  /* ── Sidebar specifically for Royal theme ── */
+  /* ── Sidebar specifically for Digital Blue theme ── */
   .royal-sidebar {
     background: linear-gradient(to bottom, #0f172a, #020617);
     border-right: 1px solid rgba(255, 255, 255, 0.05);
@@ -194,10 +194,10 @@
 
   /* ── Active navigation in sidebar ── */
   .nav-active-royal {
-    background: rgba(234, 179, 8, 0.1);
-    color: #fde047;
-    border-left: 3px solid #ca8a04;
-    box-shadow: inset 5px 0 15px rgba(202, 138, 4, 0.05);
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
+    border-left: 3px solid #0284c7;
+    box-shadow: inset 5px 0 15px rgba(2, 132, 199, 0.05);
   }
 }
 

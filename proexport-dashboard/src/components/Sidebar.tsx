@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
     LayoutDashboard, CheckCircle, Users, MessageSquare,
-    Calendar, BarChart2, FileText, User, LogOut, Globe, Crown
+    Calendar, BarChart2, FileText, User, LogOut, Globe, Anchor
 } from 'lucide-react'
 
 const navItems = [
@@ -24,17 +24,17 @@ export default function Sidebar() {
             {/* Brand Header */}
             <div className="px-6 py-10">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-600 to-yellow-800 flex items-center justify-center shadow-lg shadow-yellow-900/20 relative group">
-                        <Globe size={20} className="text-black relative z-10" />
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-lg shadow-blue-900/20 relative group">
+                        <Globe size={20} className="text-white relative z-10" />
                         <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <div>
                         <h1 className="text-white font-black text-sm tracking-tighter uppercase leading-none">
-                            GlobeX<span className="text-gradient-gold">Match</span>
+                            GlobeX<span className="text-gradient-blue">Match</span>
                         </h1>
                         <div className="flex items-center gap-1 mt-1">
-                            <Crown size={10} className="text-yellow-600" />
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">Royal Edition</span>
+                            <Anchor size={10} className="text-blue-500" />
+                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">Global Edition</span>
                         </div>
                     </div>
                 </div>
@@ -57,7 +57,7 @@ export default function Sidebar() {
                             <>
                                 <Icon
                                     size={16}
-                                    className={isActive ? 'text-yellow-500' : 'text-slate-500'}
+                                    className={isActive ? 'text-blue-400' : 'text-slate-500'}
                                     strokeWidth={isActive ? 2.5 : 2}
                                 />
                                 <span>{label}</span>

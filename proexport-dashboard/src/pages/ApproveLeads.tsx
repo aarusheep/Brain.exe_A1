@@ -17,7 +17,7 @@ export default function ApproveLeads() {
   return (
     <div>
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-        <h1 className="text-2xl font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.04)' }}>Approve Leads</h1>
+        <h1 className="text-4xl font-bold tracking-tight uppercase mb-1" style={{ color: 'white' }}>Approve Leads</h1>
         <p className="text-sm mb-7" style={{ color: '#64748b' }}>Review AI-qualified leads and take action.</p>
       </motion.div>
 
@@ -29,10 +29,10 @@ export default function ApproveLeads() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.07, duration: 0.4 }}
-            whileHover={{ y: -4, boxShadow: '0 16px 36px rgba(31,41,51,0.10)' }}
-            className="rounded-xl px-5 py-3.5 text-center premium-card gold-glint"
+            whileHover={{ y: -4, boxShadow: '0 16px 36px rgba(59,130,246,0.1)' }}
+            className="rounded-xl px-5 py-3.5 text-center premium-card blue-glint"
           >
-            <p className="text-2xl font-semibold" style={{ color: 'rgba(255,255,255,0.04)' }}><RollingNumber value={value} /></p>
+            <p className="text-2xl font-semibold" style={{ color: 'white' }}><RollingNumber value={value} /></p>
             <p className="text-xs font-medium mt-0.5" style={{ color: '#64748b' }}>{label}</p>
           </motion.div>
         ))}
@@ -46,19 +46,19 @@ export default function ApproveLeads() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.35 }}
-            className="max-w-3xl p-7 premium-card gold-glint"
+            className="max-w-3xl p-7 premium-card blue-glint"
           >
             {/* Header */}
             <div className="flex items-start justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-white text-lg shimmer"
-                  style={{ background: 'linear-gradient(to bottom right, #fde047, #ca8a04)' }}
+                  style={{ background: 'linear-gradient(to bottom right, #38bdf8, #0284c7)' }}
                 >
                   TC
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold" style={{ color: 'rgba(255,255,255,0.04)' }}>TechCorp Industries</h2>
+                  <h2 className="text-xl font-semibold" style={{ color: 'white' }}>TechCorp Industries</h2>
                   <p className="text-sm flex items-center gap-1" style={{ color: '#64748b' }}>
                     <Building2 size={12} /> Automotive Manufacturing
                   </p>
@@ -69,7 +69,7 @@ export default function ApproveLeads() {
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.3 }}
                 className="px-4 py-1.5 rounded-full text-sm font-bold text-white shimmer"
-                style={{ background: 'linear-gradient(to right, #fde047, #ca8a04)' }}
+                style={{ background: 'linear-gradient(to right, #38bdf8, #0284c7)' }}
               >
                 95% Match
               </motion.span>
@@ -83,22 +83,22 @@ export default function ApproveLeads() {
                   { Icon: Users, text: '500 – 1,000 employees' },
                   { Icon: DollarSign, text: 'Est. Value: $250K' },
                 ].map(({ Icon, text }) => (
-                  <div key={text} className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.04)' }}>
+                  <div key={text} className="flex items-center gap-2 text-sm" style={{ color: 'white' }}>
                     <Icon size={14} style={{ color: '#64748b' }} />
                     <span className="font-medium">{text}</span>
                   </div>
                 ))}
               </div>
               <div className="space-y-3">
-                <div className="text-sm" style={{ color: 'rgba(255,255,255,0.04)' }}>
+                <div className="text-sm" style={{ color: 'white' }}>
                   <span className="text-xs font-semibold block mb-0.5" style={{ color: '#64748b' }}>Contact Name</span>
                   <span className="font-medium">Klaus Brandt</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.04)' }}>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'white' }}>
                   <Mail size={14} style={{ color: '#64748b' }} />
                   <span className="font-medium">k.brandt@techcorp-de.com</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm" style={{ color: '#ca8a04' }}>
+                <div className="flex items-center gap-2 text-sm" style={{ color: '#0284c7' }}>
                   <Linkedin size={14} />
                   <span className="font-medium">linkedin.com/in/klausbrandt</span>
                 </div>
@@ -134,7 +134,7 @@ export default function ApproveLeads() {
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setDecision('approved')}
-                className="btn-gold flex items-center gap-2 px-6 py-2.5 ml-auto"
+                className="btn-blue flex items-center gap-2 px-6 py-2.5 ml-auto"
               >
                 <CheckCircle size={15} /> Approve
               </motion.button>
@@ -147,7 +147,7 @@ export default function ApproveLeads() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35 }}
-            className="max-w-md p-8 text-center premium-card gold-glint"
+            className="max-w-md p-8 text-center premium-card blue-glint"
           >
             <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${decision === 'approved' ? 'bg-emerald-100' : decision === 'rejected' ? 'bg-red-100' : 'bg-gray-100'
               }`}>
@@ -155,9 +155,9 @@ export default function ApproveLeads() {
                 decision === 'rejected' ? <XCircle size={28} className="text-red-500" /> :
                   <SkipForward size={28} style={{ color: '#64748b' }} />}
             </div>
-            <h3 className="text-lg font-semibold capitalize mb-1" style={{ color: 'rgba(255,255,255,0.04)' }}>Lead {decision}</h3>
+            <h3 className="text-lg font-semibold capitalize mb-1" style={{ color: 'white' }}>Lead {decision}</h3>
             <p className="text-sm mb-5" style={{ color: '#64748b' }}>TechCorp Industries has been {decision}.</p>
-            <motion.button whileTap={{ scale: 0.97 }} onClick={() => setDecision(null)} className="btn-gold px-6 py-2.5">
+            <motion.button whileTap={{ scale: 0.97 }} onClick={() => setDecision(null)} className="btn-blue px-6 py-2.5">
               Next Lead
             </motion.button>
           </motion.div>

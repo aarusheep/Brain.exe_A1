@@ -1,14 +1,14 @@
 import './index.css'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Layout from './components/Layout'
-import Dashboard from './pages/Dashboard'
-import ApproveLeads from './pages/ApproveLeads'
-import ApprovedLeads from './pages/ApprovedLeads'
-import Conversations from './pages/Conversations'
-import Meetings from './pages/Meetings'
-import Analytics from './pages/Analytics'
-import ContentEngine from './pages/ContentEngine'
-import Profile from './pages/Profile'
+import Layout from './components/Layout.tsx'
+import Dashboard from './pages/Dashboard.tsx'
+import ApproveLeads from './pages/ApproveLeads.tsx'
+import ApprovedLeads from './pages/ApprovedLeads.tsx'
+import Conversations from './pages/Conversations.tsx'
+import Meetings from './pages/Meetings.tsx'
+import Analytics from './pages/Analytics.tsx'
+import ContentEngine from './pages/ContentEngine.tsx'
+import Profile from './pages/Profile.tsx'
 
 export default function App() {
   return (

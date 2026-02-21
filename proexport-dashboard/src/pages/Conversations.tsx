@@ -32,35 +32,35 @@ export default function Conversations() {
   return (
     <div>
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-        <h1 className="text-2xl font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.04)' }}>Conversations</h1>
+        <h1 className="text-4xl font-bold tracking-tight uppercase mb-1" style={{ color: 'white' }}>Conversations</h1>
         <p className="text-sm mb-5" style={{ color: '#64748b' }}>AI-managed outreach threads.</p>
       </motion.div>
 
       <div className="flex gap-4" style={{ height: 'calc(100vh - 190px)' }}>
         {/* List */}
         <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}
-          className="w-72 flex-shrink-0 flex flex-col overflow-hidden premium-card gold-glint">
+          className="w-72 flex-shrink-0 flex flex-col overflow-hidden premium-card blue-glint">
           <div className="p-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
             <input placeholder="Search…" className="w-full px-3 py-2 rounded-xl text-xs outline-none"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.04)' }} />
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: 'white' }} />
           </div>
           <div className="overflow-y-auto flex-1">
             {conversations.map(c => (
               <button key={c.id} onClick={() => setSelected(c)} className="w-full text-left px-4 py-3.5 transition-all duration-200"
                 style={{
-                  background: selected.id === c.id ? 'linear-gradient(135deg,rgba(234,179,8,0.05),rgba(234,179,8,0.1))' : 'transparent',
+                  background: selected.id === c.id ? 'linear-gradient(135deg,rgba(56,189,248,0.05),rgba(56,189,248,0.1))' : 'transparent',
                   borderBottom: '1px solid rgba(255,255,255,0.08)',
-                  borderLeft: selected.id === c.id ? '3px solid #ca8a04' : '3px solid transparent',
+                  borderLeft: selected.id === c.id ? '3px solid #38bdf8' : '3px solid transparent',
                 }}>
                 <div className="flex justify-between items-center mb-0.5">
-                  <span className="text-sm font-semibold truncate" style={{ color: 'rgba(255,255,255,0.04)' }}>{c.company}</span>
+                  <span className="text-sm font-semibold truncate" style={{ color: 'white' }}>{c.company}</span>
                   <span className="text-[10px] flex-shrink-0 ml-2" style={{ color: '#64748b' }}>{c.time}</span>
                 </div>
                 <p className="text-xs truncate" style={{ color: '#64748b' }}>{c.contact}</p>
                 <p className="text-[11px] mt-0.5 truncate" style={{ color: '#64748b' }}>{c.preview}</p>
                 {c.unread > 0 && (
                   <span className="mt-1 inline-block px-2 py-0.5 rounded-full text-[10px] font-bold text-white shimmer"
-                    style={{ background: 'linear-gradient(to bottom right, #fde047, #ca8a04)' }}>
+                    style={{ background: 'linear-gradient(to bottom right, #38bdf8, #0284c7)' }}>
                     {c.unread} new
                   </span>
                 )}
@@ -71,15 +71,15 @@ export default function Conversations() {
 
         {/* Chat */}
         <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}
-          className="flex-1 flex flex-col overflow-hidden premium-card gold-glint">
+          className="flex-1 flex flex-col overflow-hidden premium-card blue-glint">
           {/* Header */}
           <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
             <div>
-              <h3 className="font-semibold text-sm" style={{ color: 'rgba(255,255,255,0.04)' }}>{selected.company}</h3>
+              <h3 className="font-semibold text-sm" style={{ color: 'white' }}>{selected.company}</h3>
               <p className="text-xs" style={{ color: '#64748b' }}>{selected.contact}</p>
             </div>
             <span className="text-[11px] font-bold px-3 py-1 rounded-full text-white shimmer"
-              style={{ background: 'linear-gradient(to right, #fde047, #ca8a04)' }}>
+              style={{ background: 'linear-gradient(to right, #38bdf8, #0284c7)' }}>
               95% Match
             </span>
           </div>
@@ -87,7 +87,7 @@ export default function Conversations() {
           {/* AI Banner */}
           <div className="mx-4 mt-3 mb-1 px-4 py-2 rounded-xl flex items-center gap-2"
             style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <Bot size={14} style={{ color: '#ca8a04' }} />
+            <Bot size={14} style={{ color: '#38bdf8' }} />
             <span className="text-xs font-semibold" style={{ color: '#94a3b8' }}>AI is handling this conversation</span>
             <span className="ml-auto text-[10px]" style={{ color: '#64748b' }}>Auto-mode ON</span>
           </div>
@@ -100,14 +100,14 @@ export default function Conversations() {
                 className={`flex ${msg.from === 'ai' ? 'justify-start' : 'justify-end'}`}>
                 {msg.from === 'ai' && (
                   <div className="w-7 h-7 rounded-full flex items-center justify-center mr-2 flex-shrink-0 mt-1 shimmer"
-                    style={{ background: 'linear-gradient(to bottom right, #fde047, #ca8a04)' }}>
+                    style={{ background: 'linear-gradient(to bottom right, #38bdf8, #0284c7)' }}>
                     <Bot size={12} className="text-white" />
                   </div>
                 )}
                 <div className="max-w-[70%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed"
                   style={msg.from === 'ai'
-                    ? { background: 'linear-gradient(to bottom right, #fde047, #ca8a04)', color: 'white', borderBottomLeftRadius: 4 }
-                    : { background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.04)', borderBottomRightRadius: 4 }
+                    ? { background: 'linear-gradient(to bottom right, #38bdf8, #0284c7)', color: 'white', borderBottomLeftRadius: 4 }
+                    : { background: 'rgba(255,255,255,0.1)', color: 'white', borderBottomRightRadius: 4 }
                   }>
                   {msg.text}
                   <div className="text-[10px] mt-1 opacity-60">{msg.time}</div>
@@ -121,8 +121,8 @@ export default function Conversations() {
             <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()}
               placeholder="Type a message or let AI handle it…"
               className="flex-1 px-4 py-2.5 rounded-xl text-sm outline-none"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.04)' }} />
-            <motion.button whileTap={{ scale: 0.97 }} onClick={send} className="btn-gold px-4 py-2.5 flex items-center gap-1.5">
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: 'white' }} />
+            <motion.button whileTap={{ scale: 0.97 }} onClick={send} className="btn-blue px-4 py-2.5 flex items-center gap-1.5">
               <Send size={14} /> Send
             </motion.button>
           </div>

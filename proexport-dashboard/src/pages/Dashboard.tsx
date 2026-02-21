@@ -1,4 +1,4 @@
-import { TrendingUp, Calendar, Bot, CheckSquare, XCircle, Globe, Zap, Anchor, ShieldCheck, Crown } from 'lucide-react'
+import { TrendingUp, Calendar, Bot, CheckSquare, XCircle, Globe, Zap, Anchor, ShieldCheck } from 'lucide-react'
 import { motion } from 'framer-motion'
 import RollingNumber from '../components/RollingNumber'
 
@@ -10,20 +10,20 @@ export default function RoyalDarkDashboard() {
             <header className="relative z-10 flex justify-between items-center mb-12">
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
                     <div className="flex items-center gap-3 mb-2">
-                        <Crown className="text-yellow-500 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" size={20} />
+                        <ShieldCheck className="text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" size={20} />
                         <span className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500">
-                            Privileged Access • Trade Intelligence
+                            Enterprise Access • Trade Intelligence
                         </span>
                     </div>
 
                     <h1 className="text-4xl font-light tracking-tight uppercase">
-                        Global <span className="font-bold text-gradient-gold italic">Command</span>
+                        Global <span className="font-bold text-gradient-blue italic">Operation</span>
                     </h1>
                 </motion.div>
 
                 <div className="flex gap-4">
                     <button className="btn-outline">Archive</button>
-                    <button className="btn-gold">New Protocol</button>
+                    <button className="btn-blue">New Protocol</button>
                 </div>
             </header>
 

@@ -24,15 +24,15 @@ const summaryData = [
 ]
 
 const statusStyle: Record<string, { bg: string; text: string; border: string }> = {
-  New: { bg: 'rgba(255,255,255,0.03)', text: '#ca8a04', border: '#c8d5e0' },
-  Contacted: { bg: '#fef9ec', text: '#92640a', border: '#f6d993' },
-  Responded: { bg: '#effaf4', text: '#16784c', border: '#a7e3c0' },
-  Meeting: { bg: '#f0eefe', text: '#5b3fb5', border: '#c9bef7' },
+  New: { bg: 'rgba(255,255,255,0.03)', text: '#38bdf8', border: '#1e293b' },
+  Contacted: { bg: 'rgba(56, 189, 248, 0.05)', text: '#7dd3fc', border: 'rgba(56, 189, 248, 0.2)' },
+  Responded: { bg: 'rgba(16, 185, 129, 0.05)', text: '#34d399', border: 'rgba(16, 185, 129, 0.2)' },
+  Meeting: { bg: 'rgba(139, 92, 246, 0.05)', text: '#a78bfa', border: 'rgba(139, 92, 246, 0.2)' },
 }
 
 const inputStyle: React.CSSProperties = {
   background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
-  color: 'rgba(255,255,255,0.04)', borderRadius: 12, outline: 'none', fontSize: '0.875rem',
+  color: 'white', borderRadius: 12, outline: 'none', fontSize: '0.875rem',
 }
 
 export default function ApprovedLeads() {
@@ -47,7 +47,7 @@ export default function ApprovedLeads() {
   return (
     <div>
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-        <h1 className="text-2xl font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.04)' }}>Approved Leads</h1>
+        <h1 className="text-4xl font-bold tracking-tight uppercase mb-1" style={{ color: 'white' }}>Approved Leads</h1>
         <p className="text-sm mb-6" style={{ color: '#64748b' }}>All leads approved for AI outreach.</p>
       </motion.div>
 
@@ -59,10 +59,10 @@ export default function ApprovedLeads() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.06, duration: 0.4 }}
-            whileHover={{ y: -4, boxShadow: '0 14px 30px rgba(31,41,51,0.10)' }}
-            className="flex-1 rounded-xl px-4 py-3.5 text-center premium-card gold-glint"
+            whileHover={{ y: -4, boxShadow: '0 14px 30px rgba(59,130,246,0.1)' }}
+            className="flex-1 rounded-xl px-4 py-3.5 text-center premium-card blue-glint"
           >
-            <p className="text-xl font-semibold" style={{ color: 'rgba(255,255,255,0.04)' }}><RollingNumber value={value} /></p>
+            <p className="text-xl font-semibold" style={{ color: 'white' }}><RollingNumber value={value} /></p>
             <p className="text-[11px] font-medium mt-0.5" style={{ color: '#64748b' }}>{label}</p>
           </motion.div>
         ))}
@@ -92,10 +92,10 @@ export default function ApprovedLeads() {
 
       {/* Table */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }}
-        className="overflow-hidden premium-card gold-glint">
+        className="overflow-hidden premium-card blue-glint">
         <table className="w-full text-sm">
           <thead>
-            <tr style={{ background: 'linear-gradient(to bottom right, #fde047, #ca8a04)' }}>
+            <tr style={{ background: 'linear-gradient(to bottom right, #0f172a, #020617)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
               {['Company', 'Contact', 'Last Contact', 'Next Action', 'Deal Value', 'Match', 'Status'].map(h => (
                 <th key={h} className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.72)' }}>{h}</th>
               ))}
@@ -107,11 +107,11 @@ export default function ApprovedLeads() {
               return (
                 <tr key={lead.company} className="lead-row"
                   style={{ background: i % 2 === 0 ? 'rgba(255,255,255,0.04)' : 'transparent', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <td className="px-4 py-3.5 font-semibold" style={{ color: 'rgba(255,255,255,0.04)' }}>{lead.company}</td>
+                  <td className="px-4 py-3.5 font-semibold" style={{ color: 'white' }}>{lead.company}</td>
                   <td className="px-4 py-3.5" style={{ color: '#64748b' }}>{lead.contact}</td>
                   <td className="px-4 py-3.5" style={{ color: '#64748b' }}>{lead.lastContact}</td>
-                  <td className="px-4 py-3.5 font-medium" style={{ color: '#ca8a04' }}>{lead.nextAction}</td>
-                  <td className="px-4 py-3.5 font-semibold" style={{ color: 'rgba(255,255,255,0.04)' }}>{lead.value}</td>
+                  <td className="px-4 py-3.5 font-medium" style={{ color: '#38bdf8' }}>{lead.nextAction}</td>
+                  <td className="px-4 py-3.5 font-semibold" style={{ color: 'white' }}>{lead.value}</td>
                   <td className="px-4 py-3.5 font-bold" style={{ color: '#94a3b8' }}>{lead.match}%</td>
                   <td className="px-4 py-3.5">
                     <span className="px-2.5 py-1 rounded-full text-xs font-semibold"
