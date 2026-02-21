@@ -1,0 +1,220 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Google Font ─────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+
+/* ── Royal Dark Design Tokens ────────────────────────────────── */
+:root {
+  --royal-bg: #020617;
+  --royal-card-from: rgba(30, 41, 59, 0.4);
+  --royal-card-to: rgba(15, 23, 42, 0.6);
+  --royal-border: rgba(255, 255, 255, 0.08);
+  --royal-border-top: rgba(255, 255, 255, 0.15);
+  --gold-from: #fde047;
+  --gold-to: #ca8a04;
+  --gold-accent: #ca8a04;
+  --slate-primary: #cbd5e1;
+  --slate-muted: #64748b;
+}
+
+/* ── Base Reset ──────────────────────────────────────────────── */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: var(--royal-bg);
+    color: var(--slate-primary);
+    font-family: 'Inter', system-ui, sans-serif;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+}
+
+/* ── Keyframes ───────────────────────────────────────────────── */
+@keyframes metallic-sweep {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+
+  30%,
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+  }
+}
+
+@keyframes ambient-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.3;
+  }
+}
+
+@keyframes gold-glint-slide {
+  0% {
+    left: -100%;
+  }
+
+  30%,
+  100% {
+    left: 200%;
+  }
+}
+
+/* ── Utility Layer ───────────────────────────────────────────── */
+@layer utilities {
+
+  /* ── Premium glassy cards ── */
+  .premium-card {
+    background: linear-gradient(145deg, var(--royal-card-from), var(--royal-card-to));
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--royal-border);
+    border-top: 1px solid var(--royal-border-top);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .premium-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  /* ── Gold glint reflection ── */
+  .gold-glint::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.05), transparent);
+    animation: metallic-sweep 8s infinite ease-in-out;
+    pointer-events: none;
+  }
+
+  /* ── Gold brand text ── */
+  .text-gradient-gold {
+    background: linear-gradient(to bottom right, var(--gold-from), var(--gold-to));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ── Primary Gold Button ── */
+  .btn-gold {
+    background: linear-gradient(to right, #ca8a04, #f59e0b);
+    color: black;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 0.6rem 1.8rem;
+    border-radius: 9999px;
+    box-shadow: 0 10px 20px -5px rgba(202, 138, 4, 0.3);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-gold::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: skewX(-20deg);
+    transition: 0s;
+  }
+
+  .btn-gold:hover::after {
+    left: 200%;
+    transition: left 0.6s ease;
+  }
+
+  .btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px -5px rgba(202, 138, 4, 0.4);
+  }
+
+  .btn-gold:active {
+    transform: translateY(0);
+  }
+
+  /* ── Outline/Secondary Button ── */
+  .btn-outline {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 0.6rem 1.8rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 9999px;
+    transition: all 0.25s ease;
+  }
+
+  .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  /* ── Ambient Background Glows ── */
+  .ambient-glow {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(120px);
+    z-index: 0;
+    pointer-events: none;
+    animation: ambient-pulse 15s infinite ease-in-out;
+  }
+
+  /* ── Sidebar specifically for Royal theme ── */
+  .royal-sidebar {
+    background: linear-gradient(to bottom, #0f172a, #020617);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.2);
+  }
+
+  /* ── Active navigation in sidebar ── */
+  .nav-active-royal {
+    background: rgba(234, 179, 8, 0.1);
+    color: #fde047;
+    border-left: 3px solid #ca8a04;
+    box-shadow: inset 5px 0 15px rgba(202, 138, 4, 0.05);
+  }
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
