@@ -11,6 +11,31 @@ export interface Lead {
     companySize: string;
     email: string;
     reasoning: string;
+    // Score engine fields
+    D1_Product_Compat?: number;
+    D2_Geography_Fit?: number;
+    D3_Trade_Capacity?: number;
+    D4_Intent_Activity?: number;
+    D5_Reliability?: number;
+    Final_Match_Score?: number;
+    Risk_Friction?: number;
+    Risk_Label?: string;
+    Match_Type?: string;
+    weights?: {
+        D1?: number;
+        D2?: number;
+        D3?: number;
+        D4?: number;
+        D5?: number;
+    };
+    dimension_status?: {
+        D1?: string;
+        D2?: string;
+        D3?: string;
+        D4?: string;
+        D5?: string;
+    };
+    _id?: string;
 }
 
 export const SAMPLE_LEADS: Lead[] = [

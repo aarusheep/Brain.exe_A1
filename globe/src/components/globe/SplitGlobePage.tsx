@@ -1,66 +1,162 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import axios from 'axios';
 import Globe from './Globe';
 import SwipeDeck from './SwipeDeck';
-import { SAMPLE_LEADS } from '@/lib/leadData';
+import type { Lead } from '@/lib/leadData';
 
-const SplitGlobePage: React.FC = () => {
+interface SplitGlobePageProps {
+    onAction?: (action: 'approve' | 'reject') => void;
+    onLoad?: (count: number) => void;
+}
+
+const API_BASE_URL = 'http://localhost:5000/api';
+
+const SplitGlobePage: React.FC<SplitGlobePageProps> = ({ onAction, onLoad }) => {
+    const [leads, setLeads] = useState<Array<Lead & {
+        D1_Product_Compat?: number;
+        D2_Geography_Fit?: number;
+        D3_Trade_Capacity?: number;
+        D4_Intent_Activity?: number;
+        D5_Reliability?: number;
+        Final_Match_Score?: number;
+        Risk_Friction?: number;
+        Risk_Label?: string;
+        Match_Type?: string;
+    }>>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [currentCountry, setCurrentCountry] = useState<string | undefined>(undefined);
+    const [loading, setLoading] = useState(true);
+
+    const fetchLeads = async () => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/importers`);
+            const data = response.data;
+
+            // Transform API data to Lead interface with score engine data
+            const newLeads = data.map((item: any) => ({
+                id: item._id || item.id,
+                companyName: item.name || item.company_name || 'Unknown Company',
+                industry: item.industry || 'General Trade',
+                location: item.country || 'Unknown',
+                country: item.country || 'Unknown',
+                contactName: item.contactName || 'Procurement Manager',
+                contactRole: item.contactRole || 'Lead Buyer',
+                matchPercentage: Math.round((item.Final_Match_Score || item.score || item.intent_score || 0) * 100),
+                estimatedValue: item.trade_volume || item.revenue || '$100k - $500k',
+                companySize: item.team_size ? `${item.team_size} Employees` : 'Unknown',
+                email: item.email || 'contact@company.com',
+                reasoning: item.summary || 'AI Match based on trade history and product fit.',
+                // Score Engine Dimensions
+                D1_Product_Compat: item.D1_Product_Compat || 0,
+                D2_Geography_Fit: item.D2_Geography_Fit || 0,
+                D3_Trade_Capacity: item.D3_Trade_Capacity || 0,
+                D4_Intent_Activity: item.D4_Intent_Activity || 0,
+                D5_Reliability: item.D5_Reliability || 0,
+                Final_Match_Score: item.Final_Match_Score || item.score || 0,
+                Risk_Friction: item.Risk_Friction || 0,
+                Risk_Label: item.Risk_Label || 'Medium',
+                Match_Type: item.Match_Type || 'Primary'
+            }));
+
+            setLeads(newLeads);
+            if (onLoad) onLoad(newLeads.length);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching leads:', error);
+            setLoading(false);
+            if (onLoad) onLoad(0);
+        }
+    };
 
     useEffect(() => {
-        if (SAMPLE_LEADS[currentIndex]) {
-            setCurrentCountry(SAMPLE_LEADS[currentIndex].country);
-        }
-    }, [currentIndex]);
+        fetchLeads();
+    }, []);
 
-    const handleSwipe = (id: string, direction: 'left' | 'right') => {
-        console.log(`Lead ${id} swiped ${direction}`);
+    const handleSwipe = async (id: string, direction: 'left' | 'right') => {
+        const action = direction === 'right' ? 'accepted' : 'rejected';
+        console.log(`Lead ${id} swiped ${direction} (${action})`);
+
+        // Optimistic UI update
+        if (onAction) {
+            onAction(direction === 'right' ? 'approve' : 'reject');
+        }
+
+        // Send feedback to backend (triggers AI learning)
+        try {
+            await axios.post(`${API_BASE_URL}/importers/${id}/review`, { status: action });
+        } catch (error) {
+            console.error('Error submitting feedback:', error);
+        }
+
+        // Move to next card after animation
         setTimeout(() => {
-            setCurrentIndex((prev) => prev + 1);
+            setCurrentIndex((prev) => {
+                const next = prev + 1;
+                // If we are near the end, maybe fetch more? 
+                // For now, let's just let it run out or refresh manually.
+                if (next >= leads.length - 2) {
+                    // Could trigger re-fetch here for infinite scroll
+                    // fetchLeads(); // carefully to append not replace
+                }
+                return next;
+            });
         }, 200);
     };
 
-    return (
-        <div className="flex flex-col lg:flex-row h-screen w-full bg-[#fcfdfe] overflow-hidden">
-            {/* Left Side: Globe (50%) */}
-            <div className="w-full lg:w-1/2 h-[400px] lg:h-full relative bg-[#050b18]">
-                <Globe targetCountry={currentCountry} />
+    const currentLead = leads[currentIndex];
+    const currentCountry = currentLead ? currentLead.country : undefined;
 
-                {/* Subtle Branding/Info Overlay */}
-                <div className="absolute top-8 left-8 p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-sm pointer-events-none">
-                    <h2 className="text-xl font-bold text-white tracking-tight">Global Intel</h2>
-                    <p className="text-xs text-blue-300 font-medium">Ranked Importers</p>
-                </div>
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-[#fafafa]">
+                <p className="text-slate-400 font-medium">Loading potential partners...</p>
+            </div>
+        );
+    }
+
+    if (leads.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-[#fafafa]">
+                <p className="text-slate-400 font-medium">No leads found.</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="flex flex-col lg:flex-row h-screen min-h-[800px] w-[calc(100%+4rem)] -m-8 bg-[#fcfdfe] overflow-hidden">
+            {/* Left Side: Globe (50%) */}
+            <div className="w-full lg:w-1/2 h-[400px] lg:h-full relative bg-[#f8fbff]/30">
+                <Globe targetCountry={currentCountry} />
             </div>
 
             {/* Right Side: Swipe Panel (50%) */}
-            <div className="w-full lg:w-1/2 h-full flex flex-col items-center justify-center p-6 lg:p-12 relative overflow-hidden">
+            <div className="w-full lg:w-1/2 h-full flex flex-col items-center justify-start p-0 relative overflow-hidden bg-[#fafafa]">
                 {/* Background Accent */}
                 <div className="absolute inset-0 bg-[#f8fbff] opacity-40 -z-10" />
 
-                <div className="w-full max-w-sm h-full flex flex-col pt-12">
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mb-8"
-                    >
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider mb-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
-                            Review Active
-                        </div>
-                        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Lead Deck</h1>
-                        <p className="text-sm text-slate-500 mt-1">
-                            Qualify lead {currentIndex + 1} of {SAMPLE_LEADS.length}
-                        </p>
-                    </motion.div>
-
-                    <div className="flex-1 relative">
-                        <SwipeDeck
-                            leads={SAMPLE_LEADS}
-                            currentIndex={currentIndex}
-                            onSwipe={handleSwipe}
-                        />
+                <div className="w-full h-full flex flex-col items-center justify-start">
+                    <div className="relative w-full flex justify-center items-start">
+                        {currentIndex < leads.length ? (
+                            <SwipeDeck
+                                leads={leads}
+                                currentIndex={currentIndex}
+                                onSwipe={handleSwipe}
+                            />
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-full p-8 text-center mt-20">
+                                <h3 className="text-xl font-bold text-slate-700 mb-2">You're all caught up!</h3>
+                                <p className="text-slate-500 mb-6">We are analyzing more partners based on your recent feedback.</p>
+                                <button
+                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                                    onClick={() => {
+                                        setLoading(true);
+                                        setCurrentIndex(0);
+                                        fetchLeads();
+                                    }}
+                                >
+                                    Refresh Recommendations
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -69,3 +165,5 @@ const SplitGlobePage: React.FC = () => {
 };
 
 export default SplitGlobePage;
+
+

@@ -34,7 +34,7 @@ const importerSchema = new mongoose.Schema({
 
   // Extended Data Fields from CSV
   avg_order_tons: Number,
-  revenue: Number, // Mapped from Revenue_Size_USD
+  revenue: String, // Formatted revenue string like "$50M"
   team_size: Number,
   certification: String,
   good_payment_history: Boolean,
@@ -58,6 +58,68 @@ const importerSchema = new mongoose.Schema({
   },
   pros: [String], // List of positives
   cons: [String], // List of negatives
+
+  // Score Engine Dimension Scores (D1-D5)
+  D1_Product_Compat: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 1
+  },
+  D2_Geography_Fit: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 1
+  },
+  D3_Trade_Capacity: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 1
+  },
+  D4_Intent_Activity: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 1
+  },
+  D5_Reliability: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 1
+  },
+
+  // Final Score Engine Metrics
+  Final_Match_Score: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 1
+  },
+  Risk_Friction: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 1
+  },
+  Risk_Label: {
+    type: String,
+    enum: ['Low', 'Medium', 'High', 'Very High'],
+    default: 'Medium'
+  },
+  Match_Type: {
+    type: String,
+    enum: ['Primary', 'Adjacent'],
+    default: 'Primary'
+  },
+
+  // Current round number
+  current_round: {
+    type: Number,
+    default: 1
+  },
 
   rank: Number, // Current rank in the list
 }, { timestamps: true });
