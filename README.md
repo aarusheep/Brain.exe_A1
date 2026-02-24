@@ -5,12 +5,17 @@ Smart Algorithm that learns on its own by changing the weights of the required f
 Problem that we solved: 
 The Gaps: 
 Not effective Leads to conversion ratio
+
 Deep algorithmic scoring
+
 Real-time intent signals
+
 Intelligent evaluation logic
+
 Weighted matching criteria
 
 How did we do it?
+
 You chose the Green square and rejected the Blue square, now both are having three features ( size, shape, and color)  out of which two are the same, then what influenced you?
 The color blue!
 And hence the weight of blue will be reduced and that of green will be increased - this is what GlobexMatch’s Score Engine code will learn and in the next round, you will have a higher acceptance rate because we gave you what you wanted.
@@ -19,6 +24,7 @@ We used Three.js for our beautiful globe, our frontend ( proexport-dashboard ) i
 This cleaned dataset is with respect to EXP_1715, who is an exporter in the electronics industry from Telangana.
 
 Our main logic - Final score = opportunity score - risk score ( opportunity : D1,D2,D3,D4,D5  risk : S1,S2,S3 )
+
 D1 — Product Compatibility
 "Does this importer buy what the exporter sells?"
 
