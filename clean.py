@@ -5,6 +5,8 @@ Sheets: Exporter_LiveSignals | Importer_LiveSignals | Global_News_LiveSignals
 
 Run:  python cleaner_globexmatch.py
 Output: EXIM_Cleaned_GlobexMatch.xlsx + prints summary
+
+This will give you the cleaned dataset for EXP_1715 ( electronics , telangana )
 """
 
 import pandas as pd
